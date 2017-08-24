@@ -342,7 +342,6 @@
 
 #ifdef CONFIG_CISTER_FRAMEWORK
 333 common cister_tracing sys_cister_tracing
-
 334 common cister_set_task_id sys_cister_set_task_id
 335 common cister_set_task_deadline sys_cister_set_task_deadline
 #endif

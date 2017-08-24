@@ -40,17 +40,13 @@ void rb_erase_node_item(struct rb_node *source, struct rb_root *root)
 */
 static void enqueue_task_dm(struct rq *rq, struct task_struct *p, int flags)
 {
-	//struct dm_task *task;
+	struct dm_task *task;
 	spin_lock(&rq->dm.lock);
 
 	//inserts the new rb node into the existing tree
 	rb_insert_node_item(&rq->dm.root, p);
 
-	//Updates the current task with the lower priority in the tree
-	/*
-	// I think this is wrong. When we enqueue something, we just have to
-	// add the task to the rb_tree, we should not change the current task
-
+	//Updates the current task with the one with the lowest priority in the tree
 	task = rb_entry(rb_first(&rq->dm.root), struct dm_task, tree_node);
 
 	if (task == NULL)
@@ -59,7 +55,7 @@ static void enqueue_task_dm(struct rq *rq, struct task_struct *p, int flags)
 		return;
 	}
 
-	rq->dm.task = rb_entry(task, struct task_struct, dm_task);*/
+	rq->dm.task = rb_entry(task, struct task_struct, dm_task);
 
 	spin_unlock(&rq->dm.lock);
 
