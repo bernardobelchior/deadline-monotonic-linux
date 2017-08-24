@@ -2,32 +2,28 @@
 
 void rb_insert_node_item(struct rb_root *root, struct task_struct *p)
 {
-	struct rb_node **n = &root->rb_node;
+	struct rb_node **node = &root->rb_node;
 	struct rb_node *parent = NULL;
 	struct rb_node *source = &p->dm_task.tree_node;
 
 	//our task structure to access deadline field??
-	struct dm_task *ans;
+	struct dm_task *cur_task;
 
 	//foreach node
-	while (*n)
+	while (*node)
 	{
-		parent = *n;
+		parent = *node;
 		//getting the current node task
-		ans = rb_entry(parent, struct dm_task, tree_node);
+		cur_task = rb_entry(*node, struct dm_task, tree_node);
 		//if new task deadline is earlier than the deadline obtained from current node??
-		if (p->dm_task.deadline <= ans->deadline)
-			n = &parent->rb_left;
+		if (p->dm_task.deadline < cur_task->deadline)
+			node = &(*node)->rb_left;
 		else
-			n = &parent->rb_right;
+			node = &(*node)->rb_right;
 	}
 
-	//source = (struct node_item*)kmalloc(sizeof(struct struct node_item),GFP_KERNEL);
-
-	rb_link_node(source, parent, n);
-	//Insert this new node as a red leaf.
-	rb_insert_color(source, root);
-	//Rebalance the tree, finish inserting
+	rb_link_node(source, parent, node); //Insert this new node as a red leaf.
+	rb_insert_color(source, root);		//Rebalance the tree, finish inserting
 }
 
 void rb_erase_node_item(struct rb_node *source, struct rb_root *root)
@@ -35,6 +31,7 @@ void rb_erase_node_item(struct rb_node *source, struct rb_root *root)
 	struct dm_task *target;
 	target = rb_entry(source, struct dm_task, tree_node);
 	rb_erase(source, root);
+	//kfree?
 }
 
 /*
@@ -43,17 +40,26 @@ void rb_erase_node_item(struct rb_node *source, struct rb_root *root)
 */
 static void enqueue_task_dm(struct rq *rq, struct task_struct *p, int flags)
 {
+	//struct dm_task *task;
 	spin_lock(&rq->dm.lock);
 
 	//inserts the new rb node into the existing tree
 	rb_insert_node_item(&rq->dm.root, p);
 
 	//Updates the current task with the lower priority in the tree
-	rq->dm.task =
-		rb_entry(
-			rb_entry(
-				rb_first(&rq->dm.root), struct dm_task, tree_node),
-			struct task_struct, dm_task);
+	/*
+	// I think this is wrong. When we enqueue something, we just have to
+	// add the task to the rb_tree, we should not change the current task
+
+	task = rb_entry(rb_first(&rq->dm.root), struct dm_task, tree_node);
+
+	if (task == NULL)
+	{
+		spin_unlock(&rq->dm.lock);
+		return;
+	}
+
+	rq->dm.task = rb_entry(task, struct task_struct, dm_task);*/
 
 	spin_unlock(&rq->dm.lock);
 
@@ -64,19 +70,47 @@ static void enqueue_task_dm(struct rq *rq, struct task_struct *p, int flags)
 
 static void dequeue_task_dm(struct rq *rq, struct task_struct *p, int flags)
 {
-	spin_lock(&rq->dm.lock);
-	rb_erase_node_item(&p->dm_task.tree_node, &rq->dm.root);
+	struct dm_task *task = NULL;
+	struct rb_node *first_node = NULL;
 
-	//Updates the current task with the lower priority in the tree
-	rq->dm.task =
-		rb_entry(
-			rb_entry(
-				rb_first(&rq->dm.root), struct dm_task, tree_node),
-			struct task_struct, dm_task);
+	spin_lock(&rq->dm.lock);
+	rq->dm.task = NULL;
+	//rb_erase_node_item(&p->dm_task.tree_node, &rq->dm.root);
+	rb_erase(&p->dm_task.tree_node, &rq->dm.root);
+
+	// Updates the current task with the lower priority in the tree,
+	// which is the first (leftmost) node in the tree
+	first_node = rb_first(&rq->dm.root);
+	if (first_node == NULL)
+	{
+		spin_unlock(&rq->dm.lock);
+#ifdef CONFIG_CISTER_TRACING
+		cister_trace(DEQUEUE_RQ, p);
+#endif
+		return;
+	}
+
+	task = rb_entry(first_node, struct dm_task, tree_node);
+
+	if (task == NULL)
+	{
+		spin_unlock(&rq->dm.lock);
+#ifdef CONFIG_CISTER_TRACING
+		cister_trace(DEQUEUE_RQ, p);
+#endif
+		return;
+	}
+
+	struct task_struct *t = rb_entry(task, struct task_struct, dm_task);
+	if (t != NULL)
+	{
+		rq->dm.task = t;
+	}
 
 	spin_unlock(&rq->dm.lock);
+
 #ifdef CONFIG_CISTER_TRACING
-	cister_trace(ENQUEUE_RQ, p);
+	cister_trace(DEQUEUE_RQ, p);
 #endif
 }
 
