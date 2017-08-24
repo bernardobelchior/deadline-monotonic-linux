@@ -3102,10 +3102,11 @@ void scheduler_tick(void)
 
 	update_rq_clock(rq);
 	curr->sched_class->task_tick(rq, curr, 0);
-
+/*
 #ifdef CONFIG_CISTER_TRACING
 	cister_trace(SCHED_TICK, curr);
 #endif
+*/
 
 	cpu_load_update_active(rq);
 	calc_global_load_tick(rq);
@@ -4109,6 +4110,11 @@ static void __setscheduler(struct rq *rq, struct task_struct *p,
 		p->sched_class = &rt_sched_class;
 	else
 		p->sched_class = &fair_sched_class;
+	
+#ifdef CONFIG_CISTER_SCHED_DM_POLICY
+	if(p->policy == SCHED_DM)
+	p->sched_class = &dm_sched_class;
+#endif
 }
 
 static void
@@ -6126,6 +6132,10 @@ void __init sched_init(void)
 		init_cfs_rq(&rq->cfs);
 		init_rt_rq(&rq->rt);
 		init_dl_rq(&rq->dl);
+#ifdef CONFIG_CISTER_SCHED_DM_POLICY
+		init_dm_rq(&rq->dm);
+#endif
+
 #ifdef CONFIG_FAIR_GROUP_SCHED
 		root_task_group.shares = ROOT_TASK_GROUP_LOAD;
 		INIT_LIST_HEAD(&rq->leaf_cfs_rq_list);
