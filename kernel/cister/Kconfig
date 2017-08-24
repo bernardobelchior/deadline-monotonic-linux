@@ -1,0 +1,10 @@
+menu "CISTER framework"
+	config CISTER_FRAMEWORK
+	bool "CISTER Framework"
+	default y
+
+	config CISTER_TRACING
+	bool "CISTER tracing"
+	default y
+	depends on CISTER_FRAMEWORK
+endmenu
