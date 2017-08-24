@@ -5,4 +5,6 @@ asmlinkage long sys_cister_tracing(int enable);
 
 asmlinkage long sys_cister_set_task_id(int id);
 
-#endif 
+asmlinkage long sys_cister_set_task_deadline(unsigned long long deadline);
+
+#endif

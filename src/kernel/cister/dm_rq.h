@@ -5,7 +5,8 @@
 #include <linux/rbtree.h>
 #include <linux/spinlock.h>
 
-struct dm_rq{
+struct dm_rq
+{
 	struct rb_root root;
 	struct task_struct *task;
 	spinlock_t lock;

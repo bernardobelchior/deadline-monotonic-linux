@@ -20,3 +20,13 @@ asmlinkage long sys_cister_set_task_id(int pid)
 
 	return 0;
 }
+
+asmlinkage long sys_cister_set_task_deadline(unsigned long long deadline)
+{
+
+#ifdef CONFIG_CISTER_SCHED_DM_POLICY
+	set_task_deadline(deadline);
+#endif
+
+	return 0;
+}
