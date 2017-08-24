@@ -5,6 +5,7 @@ DIR_PATH=$(echo $1 | sed "s,/*$,,")
 CUR_PATH=$(realpath .)
 
 cp "kcompile.sh" "$DIR_PATH/.."
+cp ".config" "$DIR_PATH"
 
 # len(./src) = 7
 NEW_FILES=$(find "./src" -type f | cut -b 7-)
