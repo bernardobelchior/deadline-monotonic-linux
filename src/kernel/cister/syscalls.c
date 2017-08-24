@@ -11,11 +11,11 @@ asmlinkage long sys_cister_tracing(int enable)
 	return 0;
 }
 
-asmlinkage longsys_cister_set_task_id(int pid)
+asmlinkage long sys_cister_set_task_id(int pid)
 {
 
 #ifdef CONFIG_CISTER_SCHED_DM_POLICY
-	set_task_id(id);
+	set_task_id(pid);
 #endif
 
 	return 0;

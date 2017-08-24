@@ -60,10 +60,6 @@ static int dequeue (char *buffer)
 		len += sprintf(buffer+len,"state,%d,",(int)trace.events[trace.read_item].state);
 		len += sprintf(buffer+len,"%s\n",trace.events[trace.read_item].comm);
 
-#ifdef CONFIG_CISTER_SCHED_DM_POLICY
-		trace.events[trace.write_item].task_id = p->dm_task.id;
-#endif
-
 		increment(&trace.read_item);
 		ret = 1;
 	}
@@ -84,7 +80,7 @@ static int enqueue (enum evt event, unsigned long long time, struct task_struct 
 	strcpy(trace.events[trace.write_item].comm, p->comm);
 
 #ifdef CONFIG_CISTER_SCHED_DM_POLICY
-	trace.events[trace.write_item].task_id = p->lf_task.id;
+	trace.events[trace.write_item].task_id = p->dm_task.id;
 #endif
 
 	increment(&trace.write_item);

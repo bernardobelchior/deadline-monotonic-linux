@@ -26,7 +26,7 @@ struct trace_evt{
 	int policy;
 	char comm[TRACE_TASK_COMM_LEN];
 
-#ifdef CONFIG_CISTER_SCHED_LIFO_POLICY
+#ifdef CONFIG_CISTER_SCHED_DM_POLICY
 	int task_id;
 #endif
 };
