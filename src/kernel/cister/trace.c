@@ -49,11 +49,21 @@ static int dequeue (char *buffer)
 		}
 		len = sprintf(buffer,"%llu,",trace.events[trace.read_item].time);
 		len += sprintf(buffer+len,"%s,",evt);
+
+#ifdef CONFIG_CISTER_SCHED_DM_POLICY
+		len += sprintf(buffer+len,"id,%d,",(int)trace.events[trace.read_item].task_id);
+#endif
+
 		len += sprintf(buffer+len,"pid,%d,",(int)trace.events[trace.read_item].pid);
 		len += sprintf(buffer+len,"prio,%d,",(int)trace.events[trace.read_item].prio);
 		len += sprintf(buffer+len,"policy,%d,",(int)trace.events[trace.read_item].policy);
 		len += sprintf(buffer+len,"state,%d,",(int)trace.events[trace.read_item].state);
 		len += sprintf(buffer+len,"%s\n",trace.events[trace.read_item].comm);
+
+#ifdef CONFIG_CISTER_SCHED_DM_POLICY
+		trace.events[trace.write_item].task_id = p->dm_task.id;
+#endif
+
 		increment(&trace.read_item);
 		ret = 1;
 	}
@@ -72,6 +82,11 @@ static int enqueue (enum evt event, unsigned long long time, struct task_struct 
 	trace.events[trace.write_item].prio = p->prio;
 	trace.events[trace.write_item].policy = p->policy;
 	strcpy(trace.events[trace.write_item].comm, p->comm);
+
+#ifdef CONFIG_CISTER_SCHED_DM_POLICY
+	trace.events[trace.write_item].task_id = p->lf_task.id;
+#endif
+
 	increment(&trace.write_item);
 	spin_unlock(&trace.lock);
 	return 1;
@@ -111,8 +126,16 @@ module_init(proc_trace_init);
 //This function will be used to get the event.
 void cister_trace(enum evt event, struct task_struct *p)
 {
+	if(p->policy != SCHED_DM)
+		return;
+
 	if(enabled){
 		unsigned long long time = ktime_to_ns(ktime_get());
 		enqueue(event, time, p);
 	}
+}
+
+void enable_tracing(int enable)
+{
+	enabled = (unsigned char) enable;
 }

@@ -1,5 +1,5 @@
-ifndef __LF_RQ_H_
-#define __LF_RQ_H_
+#ifndef __DM_RQ_H_
+#define __DM_RQ_H_
 
 #include <linux/sched.h>
 #include <linux/list.h>

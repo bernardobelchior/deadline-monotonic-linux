@@ -1,15 +1,15 @@
 #include "../sched/sched.h"
 
 /*
-* LIFO scheduling class.
+* Deadline Monotonic scheduling class.
 * Implements SCHED_DM
 */
 static void enqueue_task_dm(struct rq *rq, struct task_struct *p, int flags)
 {
-	spin_lock(&rq->dm_rq.lock);
-	list_add(&p->dm_task.node,&rq->dm_rq.tasks);
-	rq->dm_rq.task = p;
-	spin_unlock(&rq->dm_rq.lock);
+	spin_lock(&rq->dm.lock);
+	list_add(&p->dm_task.node,&rq->dm.tasks);
+	rq->dm.task = p;
+	spin_unlock(&rq->dm.lock);
 #ifdef CONFIG_CISTER_TRACING
 	cister_trace(ENQUEUE_RQ,p);
 #endif
@@ -20,10 +20,10 @@ static void dequeue_task_dm(struct rq *rq, struct task_struct *p, int flags)
 	struct dm_task *t = NULL;
 	spin_lock(&rq->dm.lock);
 	list_del(&p->dm_task.node);
-	if(list_empty(&rq->dm_rq.tasks)){
-		rq->dm_rq.task = NULL;
+	if(list_empty(&rq->dm.tasks)){
+		rq->dm.task = NULL;
 	}else{
-		t = list_first_entry(&rq->dm_rq.tasks,struct dm_task, node);
+		t = list_first_entry(&rq->dm.tasks,struct dm_task, node);
 		rq->dm.task = container_of(t,struct task_struct, dm_task);
 	}
 	spin_unlock(&rq->dm.lock);
@@ -48,13 +48,13 @@ static void check_preempt_curr_dm(struct rq *rq, struct task_struct *p, int flag
 		case SCHED_BATCH:
 		case SCHED_IDLE:
 		//case SCHED_RESET_ON_FORK:
-		case SCHED_LIFO:
-			resched_task(rq->curr);
+		case SCHED_DM:
+			resched_curr(rq);
 			break;
 	}
 }
 
-static struct task_struct *pick_next_task_dm(struct rq *rq)
+static struct task_struct *pick_next_task_dm(struct rq *rq, struct task_struct *prev, struct rq_flags *rf)
 {
 	struct task_struct * p = NULL;
 	spin_lock(&rq->dm.lock);
@@ -67,7 +67,7 @@ static void put_prev_task_dm(struct rq *rq, struct task_struct *prev)
 }
 
 #ifdef CONFIG_SMP
-static int select_task_rq_dm(struct task_struct *p, int sd_flag, int flags)
+static int select_task_rq_dm(struct task_struct *p, int _task_cpu, int sd_flag, int flags)
 {
 	return task_cpu(p);
 }
@@ -93,16 +93,6 @@ static void prio_changed_dm(struct rq *rq, struct task_struct *p, int oldprio)
 
 static void update_curr_dm(struct rq *rq)
 {
-}
-void cister_trace(enum evt event, struct task_struct *p)
-{
-	//this is a filter for collecting DM tasks data
-	if(p->policy != SCHED_LIFO)
-		return;
-	if(enabled){
-		unsigned long long time = ktime_to_ns(ktime_get());
-		enqueue(event, time, p);
-	}
 }
 
 const struct sched_class dm_sched_class = {

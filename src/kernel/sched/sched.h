@@ -1449,6 +1449,9 @@ static inline void set_curr_task(struct rq *rq, struct task_struct *curr)
 extern const struct sched_class stop_sched_class;
 extern const struct sched_class dl_sched_class;
 extern const struct sched_class rt_sched_class;
+#ifdef CONFIG_CISTER_SCHED_DM_POLICY
+extern const struct sched_class dm_sched_class;
+#endif
 extern const struct sched_class fair_sched_class;
 extern const struct sched_class idle_sched_class;
 
@@ -1576,7 +1579,7 @@ extern void update_rq_clock(struct rq *rq);
 extern void activate_task(struct rq *rq, struct task_struct *p, int flags);
 extern void deactivate_task(struct rq *rq, struct task_struct *p, int flags);
 
-extern void check_preempt_curr(struct rq *rq, struct task_struct *p, int flags);
+extern void check_preempt_curr(struct rq* rq, struct task_struct *p, int flags);
 
 extern const_debug unsigned int sysctl_sched_time_avg;
 extern const_debug unsigned int sysctl_sched_nr_migrate;
