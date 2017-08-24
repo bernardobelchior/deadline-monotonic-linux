@@ -3,15 +3,9 @@
 DIR_PATH=$(realpath "$1")
 CUR_PATH=$(realpath .)
 
-#find "$DIR_PATH/kernel" -maxdepth 1 -type d &> /dev/null
-#if [ $? -ne 0 ]; then
-#	echo "Path has no directory 'kernel'. Exiting.."
-#	exit 1
-#fi
-
 cp "kcompile.sh" "$DIR_PATH/.."
 
-# len(./src/kernel) = 14
+# len(./src) = 7
 NEW_FILES=$(find "./src" -type f | cut -b 7-)
 NEW_DIRS=$(find "./src" -type d | cut -b 7-)
 
