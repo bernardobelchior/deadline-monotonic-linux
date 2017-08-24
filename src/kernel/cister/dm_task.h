@@ -2,8 +2,10 @@
 #define __DM_TASK_H_
 
 struct dm_task{
-	struct list_head node;
 	int id;
+	struct rb_node tree_node;
+	unsigned long long deadline;
+	 
 };
 void set_task_id(int id);
 #endif
