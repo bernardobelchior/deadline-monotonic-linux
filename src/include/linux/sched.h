@@ -546,7 +546,7 @@ struct task_struct {
 	struct sched_dl_entity		dl;
 
 #ifdef CONFIG_CISTER_SCHED_DM_POLICY
-	struct lf_task    lf_task;
+	struct dm_task    dm_task;
 #endif	
 	
 #ifdef CONFIG_PREEMPT_NOTIFIERS
