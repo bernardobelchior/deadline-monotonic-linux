@@ -47,20 +47,16 @@ static void enqueue_task_dm(struct rq *rq, struct task_struct *p, int flags)
 	rb_insert_node_item(&rq->dm.root, p);
 
 	//Updates the current task with the lower priority in the tree
-	/*
+	 
 	// I think this is wrong. When we enqueue something, we just have to
 	// add the task to the rb_tree, we should not change the current task
 
 	task = rb_entry(rb_first(&rq->dm.root), struct dm_task, tree_node);
 
-	if (task == NULL)
+	if (task != NULL)
 	{
-		spin_unlock(&rq->dm.lock);
-		return;
+		rq->dm.task = rb_entry(task, struct task_struct, dm_task);
 	}
-
-	rq->dm.task = rb_entry(task, struct task_struct, dm_task);*/
-
 	spin_unlock(&rq->dm.lock);
 
 #ifdef CONFIG_CISTER_TRACING
@@ -75,7 +71,7 @@ static void dequeue_task_dm(struct rq *rq, struct task_struct *p, int flags)
 
 	spin_lock(&rq->dm.lock);
 	rq->dm.task = NULL;
-	//rb_erase_node_item(&p->dm_task.tree_node, &rq->dm.root);
+	 
 	rb_erase(&p->dm_task.tree_node, &rq->dm.root);
 
 	// Updates the current task with the lower priority in the tree,
