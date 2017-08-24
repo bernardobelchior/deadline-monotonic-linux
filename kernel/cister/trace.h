@@ -8,6 +8,8 @@ enum evt{
 	SCHED_TICK = 0,
 	SWITCH_AWAY,
 	SWITCH_TO,
+	ENQUEUE_RQ,
+	DEQUEUE_RQ
 };
 #define TRACE_TASK_COMM_LEN 16
 struct trace_evt{

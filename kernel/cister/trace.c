@@ -40,6 +40,12 @@ static int dequeue (char *buffer)
 			case SWITCH_TO:
 				strcpy(evt,"SWT_TO");
 				break;
+			case ENQUEUE_RQ:
+				strcpy(evt,"ENQ_RQ");
+				break;
+			case DEQUEUE_RQ:
+				strcpy(evt,"DEQ_RQ");
+				break;
 		}
 		len = sprintf(buffer,"%llu,",trace.events[trace.read_item].time);
 		len += sprintf(buffer+len,"%s,",evt);

@@ -7,4 +7,9 @@ menu "CISTER framework"
 	bool "CISTER tracing"
 	default y
 	depends on CISTER_FRAMEWORK
+	
+	config CISTER_SCHED_DM_POLICY
+	bool "CISTER scheduling policy:DM"
+	default y
+	depends on CISTER_FRAMEWORK
 endmenu
