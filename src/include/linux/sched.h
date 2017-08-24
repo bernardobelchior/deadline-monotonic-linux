@@ -26,6 +26,9 @@
 #include <linux/signal_types.h>
 #include <linux/mm_types_task.h>
 #include <linux/task_io_accounting.h>
+#ifdef CONFIG_CISTER_SCHED_DM_POLICY
+#include "../../kernel/cister/dm_task.h"
+#endif
 
 /* task_struct member predeclarations (sorted alphabetically): */
 struct audit_context;
@@ -542,6 +545,10 @@ struct task_struct {
 #endif
 	struct sched_dl_entity		dl;
 
+#ifdef CONFIG_CISTER_SCHED_DM_POLICY
+	struct lf_task    lf_task;
+#endif	
+	
 #ifdef CONFIG_PREEMPT_NOTIFIERS
 	/* List of struct preempt_notifier: */
 	struct hlist_head		preempt_notifiers;
