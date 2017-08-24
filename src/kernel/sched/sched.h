@@ -162,7 +162,7 @@ static inline int task_has_dl_policy(struct task_struct *p)
 /*
  * Tells if entity @a should preempt entity @b.
  */
-static inline bool
+	static inline bool
 dl_entity_preempt(struct sched_dl_entity *a, struct sched_dl_entity *b)
 {
 	return dl_time_before(a->deadline, b->deadline);
@@ -229,23 +229,23 @@ struct dl_bw {
 	u64 bw, total_bw;
 };
 
-static inline
+	static inline
 void __dl_clear(struct dl_bw *dl_b, u64 tsk_bw)
 {
 	dl_b->total_bw -= tsk_bw;
 }
 
-static inline
+	static inline
 void __dl_add(struct dl_bw *dl_b, u64 tsk_bw)
 {
 	dl_b->total_bw += tsk_bw;
 }
 
-static inline
+	static inline
 bool __dl_overflow(struct dl_bw *dl_b, int cpus, u64 old_bw, u64 new_bw)
 {
 	return dl_b->bw != -1 &&
-	       dl_b->bw * cpus < dl_b->total_bw - old_bw + new_bw;
+		dl_b->bw * cpus < dl_b->total_bw - old_bw + new_bw;
 }
 
 extern void init_dl_bw(struct dl_bw *dl_b);
@@ -337,7 +337,7 @@ struct task_group {
 typedef int (*tg_visitor)(struct task_group *, void *);
 
 extern int walk_tg_tree_from(struct task_group *from,
-			     tg_visitor down, tg_visitor up, void *data);
+		tg_visitor down, tg_visitor up, void *data);
 
 /*
  * Iterate the full tree, calling @down when first entering a node and @up when
@@ -357,8 +357,8 @@ extern int alloc_fair_sched_group(struct task_group *tg, struct task_group *pare
 extern void online_fair_sched_group(struct task_group *tg);
 extern void unregister_fair_sched_group(struct task_group *tg);
 extern void init_tg_cfs_entry(struct task_group *tg, struct cfs_rq *cfs_rq,
-			struct sched_entity *se, int cpu,
-			struct sched_entity *parent);
+		struct sched_entity *se, int cpu,
+		struct sched_entity *parent);
 extern void init_cfs_bandwidth(struct cfs_bandwidth *cfs_b);
 
 extern void __refill_cfs_bandwidth_runtime(struct cfs_bandwidth *cfs_b);
@@ -373,7 +373,7 @@ extern void init_tg_rt_entry(struct task_group *tg, struct rt_rq *rt_rq,
 
 extern struct task_group *sched_create_group(struct task_group *parent);
 extern void sched_online_group(struct task_group *tg,
-			       struct task_group *parent);
+		struct task_group *parent);
 extern void sched_destroy_group(struct task_group *tg);
 extern void sched_offline_group(struct task_group *tg);
 
@@ -384,10 +384,10 @@ extern int sched_group_set_shares(struct task_group *tg, unsigned long shares);
 
 #ifdef CONFIG_SMP
 extern void set_task_rq_fair(struct sched_entity *se,
-			     struct cfs_rq *prev, struct cfs_rq *next);
+		struct cfs_rq *prev, struct cfs_rq *next);
 #else /* !CONFIG_SMP */
 static inline void set_task_rq_fair(struct sched_entity *se,
-			     struct cfs_rq *prev, struct cfs_rq *next) { }
+		struct cfs_rq *prev, struct cfs_rq *next) { }
 #endif /* CONFIG_SMP */
 #endif /* CONFIG_FAIR_GROUP_SCHED */
 
@@ -639,7 +639,7 @@ struct rq {
 	unsigned int nr_numa_running;
 	unsigned int nr_preferred_running;
 #endif
-	#define CPU_LOAD_IDX_MAX 5
+#define CPU_LOAD_IDX_MAX 5
 	unsigned long cpu_load[CPU_LOAD_IDX_MAX];
 #ifdef CONFIG_NO_HZ_COMMON
 #ifdef CONFIG_SMP
@@ -943,10 +943,10 @@ extern int migrate_swap(struct task_struct *, struct task_struct *);
 
 #ifdef CONFIG_SMP
 
-static inline void
+	static inline void
 queue_balance_callback(struct rq *rq,
-		       struct callback_head *head,
-		       void (*func)(struct rq *rq))
+		struct callback_head *head,
+		void (*func)(struct rq *rq))
 {
 	lockdep_assert_held(&rq->lock);
 
@@ -962,7 +962,7 @@ extern void sched_ttwu_pending(void);
 
 #define rcu_dereference_check_sched_domain(p) \
 	rcu_dereference_check((p), \
-			      lockdep_is_held(&sched_domains_mutex))
+			lockdep_is_held(&sched_domains_mutex))
 
 /*
  * The domain tree (rq->sd) is protected by RCU's quiescent state transition.
@@ -1188,7 +1188,7 @@ enum {
 
 #if defined(CONFIG_SCHED_DEBUG) && defined(HAVE_JUMP_LABEL)
 #define SCHED_FEAT(name, enabled)					\
-static __always_inline bool static_branch_##name(struct static_key *key) \
+	static __always_inline bool static_branch_##name(struct static_key *key) \
 {									\
 	return static_key_##enabled(key);				\
 }
@@ -1371,8 +1371,8 @@ struct sched_class {
 	 * tasks.
 	 */
 	struct task_struct * (*pick_next_task) (struct rq *rq,
-						struct task_struct *prev,
-						struct rq_flags *rf);
+			struct task_struct *prev,
+			struct rq_flags *rf);
 	void (*put_prev_task) (struct rq *rq, struct task_struct *p);
 
 #ifdef CONFIG_SMP
@@ -1382,7 +1382,7 @@ struct sched_class {
 	void (*task_woken) (struct rq *this_rq, struct task_struct *task);
 
 	void (*set_cpus_allowed)(struct task_struct *p,
-				 const struct cpumask *newmask);
+			const struct cpumask *newmask);
 
 	void (*rq_online)(struct rq *rq);
 	void (*rq_offline)(struct rq *rq);
@@ -1401,10 +1401,10 @@ struct sched_class {
 	void (*switched_from) (struct rq *this_rq, struct task_struct *task);
 	void (*switched_to) (struct rq *this_rq, struct task_struct *task);
 	void (*prio_changed) (struct rq *this_rq, struct task_struct *task,
-			     int oldprio);
+			int oldprio);
 
 	unsigned int (*get_rr_interval) (struct rq *rq,
-					 struct task_struct *task);
+			struct task_struct *task);
 
 	void (*update_curr) (struct rq *rq);
 
@@ -1428,7 +1428,7 @@ static inline void set_curr_task(struct rq *rq, struct task_struct *curr)
 
 #define sched_class_highest (&stop_sched_class)
 #define for_each_class(class) \
-   for (class = sched_class_highest; class; class = class->next)
+	for (class = sched_class_highest; class; class = class->next)
 
 extern const struct sched_class stop_sched_class;
 extern const struct sched_class dl_sched_class;
@@ -1449,7 +1449,7 @@ extern void set_cpus_allowed_common(struct task_struct *p, const struct cpumask 
 
 #ifdef CONFIG_CPU_IDLE
 static inline void idle_set_state(struct rq *rq,
-				  struct cpuidle_state *idle_state)
+		struct cpuidle_state *idle_state)
 {
 	rq->idle_state = idle_state;
 }
@@ -1461,7 +1461,7 @@ static inline struct cpuidle_state *idle_get_state(struct rq *rq)
 }
 #else
 static inline void idle_set_state(struct rq *rq,
-				  struct cpuidle_state *idle_state)
+		struct cpuidle_state *idle_state)
 {
 }
 
@@ -1602,7 +1602,7 @@ static inline int hrtick_enabled(struct rq *rq)
 extern void sched_avg_update(struct rq *rq);
 
 #ifndef arch_scale_freq_capacity
-static __always_inline
+	static __always_inline
 unsigned long arch_scale_freq_capacity(struct sched_domain *sd, int cpu)
 {
 	return SCHED_CAPACITY_SCALE;
@@ -1610,7 +1610,7 @@ unsigned long arch_scale_freq_capacity(struct sched_domain *sd, int cpu)
 #endif
 
 #ifndef arch_scale_cpu_capacity
-static __always_inline
+	static __always_inline
 unsigned long arch_scale_cpu_capacity(struct sched_domain *sd, int cpu)
 {
 	if (sd && (sd->flags & SD_SHARE_CPUCAPACITY) && (sd->span_weight > 1))
@@ -1633,78 +1633,78 @@ static inline void sched_avg_update(struct rq *rq) { }
 struct rq *__task_rq_lock(struct task_struct *p, struct rq_flags *rf)
 	__acquires(rq->lock);
 
-struct rq *task_rq_lock(struct task_struct *p, struct rq_flags *rf)
-	__acquires(p->pi_lock)
+	struct rq *task_rq_lock(struct task_struct *p, struct rq_flags *rf)
+__acquires(p->pi_lock)
 	__acquires(rq->lock);
 
-static inline void __task_rq_unlock(struct rq *rq, struct rq_flags *rf)
-	__releases(rq->lock)
+	static inline void __task_rq_unlock(struct rq *rq, struct rq_flags *rf)
+__releases(rq->lock)
 {
 	rq_unpin_lock(rq, rf);
 	raw_spin_unlock(&rq->lock);
 }
 
-static inline void
-task_rq_unlock(struct rq *rq, struct task_struct *p, struct rq_flags *rf)
+	static inline void
+	task_rq_unlock(struct rq *rq, struct task_struct *p, struct rq_flags *rf)
 	__releases(rq->lock)
-	__releases(p->pi_lock)
+__releases(p->pi_lock)
 {
 	rq_unpin_lock(rq, rf);
 	raw_spin_unlock(&rq->lock);
 	raw_spin_unlock_irqrestore(&p->pi_lock, rf->flags);
 }
 
-static inline void
-rq_lock_irqsave(struct rq *rq, struct rq_flags *rf)
-	__acquires(rq->lock)
+	static inline void
+	rq_lock_irqsave(struct rq *rq, struct rq_flags *rf)
+__acquires(rq->lock)
 {
 	raw_spin_lock_irqsave(&rq->lock, rf->flags);
 	rq_pin_lock(rq, rf);
 }
 
-static inline void
-rq_lock_irq(struct rq *rq, struct rq_flags *rf)
-	__acquires(rq->lock)
+	static inline void
+	rq_lock_irq(struct rq *rq, struct rq_flags *rf)
+__acquires(rq->lock)
 {
 	raw_spin_lock_irq(&rq->lock);
 	rq_pin_lock(rq, rf);
 }
 
-static inline void
-rq_lock(struct rq *rq, struct rq_flags *rf)
-	__acquires(rq->lock)
+	static inline void
+	rq_lock(struct rq *rq, struct rq_flags *rf)
+__acquires(rq->lock)
 {
 	raw_spin_lock(&rq->lock);
 	rq_pin_lock(rq, rf);
 }
 
-static inline void
-rq_relock(struct rq *rq, struct rq_flags *rf)
-	__acquires(rq->lock)
+	static inline void
+	rq_relock(struct rq *rq, struct rq_flags *rf)
+__acquires(rq->lock)
 {
 	raw_spin_lock(&rq->lock);
 	rq_repin_lock(rq, rf);
 }
 
-static inline void
-rq_unlock_irqrestore(struct rq *rq, struct rq_flags *rf)
-	__releases(rq->lock)
+	static inline void
+	rq_unlock_irqrestore(struct rq *rq, struct rq_flags *rf)
+__releases(rq->lock)
 {
 	rq_unpin_lock(rq, rf);
 	raw_spin_unlock_irqrestore(&rq->lock, rf->flags);
 }
 
-static inline void
-rq_unlock_irq(struct rq *rq, struct rq_flags *rf)
-	__releases(rq->lock)
+	static inline void
+	rq_unlock_irq(struct rq *rq, struct rq_flags *rf)
+__releases(rq->lock)
 {
 	rq_unpin_lock(rq, rf);
 	raw_spin_unlock_irq(&rq->lock);
 }
 
-static inline void
-rq_unlock(struct rq *rq, struct rq_flags *rf)
-	__releases(rq->lock)
+	static inline void
+	rq_unlock(struct rq *rq, struct rq_flags *rf)
+__releases(rq->lock)
 {
 	rq_unpin_lock(rq, rf);
 	raw_spin_unlock(&rq->lock);
@@ -1723,10 +1723,10 @@ static inline void double_rq_lock(struct rq *rq1, struct rq *rq2);
  * reduces latency compared to the unfair variant below.  However, it
  * also adds more overhead and therefore may reduce throughput.
  */
-static inline int _double_lock_balance(struct rq *this_rq, struct rq *busiest)
+	static inline int _double_lock_balance(struct rq *this_rq, struct rq *busiest)
 	__releases(this_rq->lock)
 	__acquires(busiest->lock)
-	__acquires(this_rq->lock)
+__acquires(this_rq->lock)
 {
 	raw_spin_unlock(&this_rq->lock);
 	double_rq_lock(this_rq, busiest);
@@ -1742,10 +1742,10 @@ static inline int _double_lock_balance(struct rq *this_rq, struct rq *busiest)
  * grant the double lock to lower cpus over higher ids under contention,
  * regardless of entry order into the function.
  */
-static inline int _double_lock_balance(struct rq *this_rq, struct rq *busiest)
+	static inline int _double_lock_balance(struct rq *this_rq, struct rq *busiest)
 	__releases(this_rq->lock)
 	__acquires(busiest->lock)
-	__acquires(this_rq->lock)
+__acquires(this_rq->lock)
 {
 	int ret = 0;
 
@@ -1754,11 +1754,11 @@ static inline int _double_lock_balance(struct rq *this_rq, struct rq *busiest)
 			raw_spin_unlock(&this_rq->lock);
 			raw_spin_lock(&busiest->lock);
 			raw_spin_lock_nested(&this_rq->lock,
-					      SINGLE_DEPTH_NESTING);
+					SINGLE_DEPTH_NESTING);
 			ret = 1;
 		} else
 			raw_spin_lock_nested(&busiest->lock,
-					      SINGLE_DEPTH_NESTING);
+					SINGLE_DEPTH_NESTING);
 	}
 	return ret;
 }
@@ -1779,8 +1779,8 @@ static inline int double_lock_balance(struct rq *this_rq, struct rq *busiest)
 	return _double_lock_balance(this_rq, busiest);
 }
 
-static inline void double_unlock_balance(struct rq *this_rq, struct rq *busiest)
-	__releases(busiest->lock)
+	static inline void double_unlock_balance(struct rq *this_rq, struct rq *busiest)
+__releases(busiest->lock)
 {
 	raw_spin_unlock(&busiest->lock);
 	lock_set_subclass(&this_rq->lock.dep_map, 0, _RET_IP_);
@@ -1819,9 +1819,9 @@ static inline void double_raw_lock(raw_spinlock_t *l1, raw_spinlock_t *l2)
  * Note this does not disable interrupts like task_rq_lock,
  * you need to do so manually before calling.
  */
-static inline void double_rq_lock(struct rq *rq1, struct rq *rq2)
+	static inline void double_rq_lock(struct rq *rq1, struct rq *rq2)
 	__acquires(rq1->lock)
-	__acquires(rq2->lock)
+__acquires(rq2->lock)
 {
 	BUG_ON(!irqs_disabled());
 	if (rq1 == rq2) {
@@ -1844,9 +1844,9 @@ static inline void double_rq_lock(struct rq *rq1, struct rq *rq2)
  * Note this does not restore interrupts like task_rq_unlock,
  * you need to do so manually after calling.
  */
-static inline void double_rq_unlock(struct rq *rq1, struct rq *rq2)
+	static inline void double_rq_unlock(struct rq *rq1, struct rq *rq2)
 	__releases(rq1->lock)
-	__releases(rq2->lock)
+__releases(rq2->lock)
 {
 	raw_spin_unlock(&rq1->lock);
 	if (rq1 != rq2)
@@ -1867,9 +1867,9 @@ extern bool sched_smp_initialized;
  * Note this does not disable interrupts like task_rq_lock,
  * you need to do so manually before calling.
  */
-static inline void double_rq_lock(struct rq *rq1, struct rq *rq2)
+	static inline void double_rq_lock(struct rq *rq1, struct rq *rq2)
 	__acquires(rq1->lock)
-	__acquires(rq2->lock)
+__acquires(rq2->lock)
 {
 	BUG_ON(!irqs_disabled());
 	BUG_ON(rq1 != rq2);
@@ -1883,9 +1883,9 @@ static inline void double_rq_lock(struct rq *rq1, struct rq *rq2)
  * Note this does not restore interrupts like task_rq_unlock,
  * you need to do so manually after calling.
  */
-static inline void double_rq_unlock(struct rq *rq1, struct rq *rq2)
+	static inline void double_rq_unlock(struct rq *rq1, struct rq *rq2)
 	__releases(rq1->lock)
-	__releases(rq2->lock)
+__releases(rq2->lock)
 {
 	BUG_ON(rq1 != rq2);
 	raw_spin_unlock(&rq1->lock);
@@ -1908,7 +1908,7 @@ extern void
 show_numa_stats(struct task_struct *p, struct seq_file *m);
 extern void
 print_numa_stats(struct seq_file *m, int node, unsigned long tsf,
-	unsigned long tpf, unsigned long gsf, unsigned long gpf);
+		unsigned long tpf, unsigned long gsf, unsigned long gpf);
 #endif /* CONFIG_NUMA_BALANCING */
 #endif /* CONFIG_SCHED_DEBUG */
 
