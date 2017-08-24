@@ -1,6 +1,7 @@
 #!/bin/bash
 
-DIR_PATH=$(realpath "$1")
+#DIR_PATH=$(realpath "$1")
+DIR_PATH=$(echo $1 | sed "s,/*$,,")
 CUR_PATH=$(realpath .)
 
 cp "kcompile.sh" "$DIR_PATH/.."
