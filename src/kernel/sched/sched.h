@@ -44,6 +44,10 @@
 #define SCHED_WARN_ON(x)	((void)(x))
 #endif
 
+#ifdef CONFIG_CISTER_SCHED_DM_POLICY
+#include "../cister/dm_rq.h"
+#endif
+
 #ifdef CONFIG_CISTER_TRACING
 #include "../cister/trace.h"
 #endif
@@ -143,6 +147,14 @@ static inline int dl_policy(int policy)
 {
 	return policy == SCHED_DEADLINE;
 }
+
+#ifdef CONFIG_CISTER_SCHED_DM_POLICY
+static inline int dm_policy(int policy)
+{
+	return policy == SCHED_DM;
+}
+#endif
+
 static inline bool valid_policy(int policy)
 {
 	return idle_policy(policy) || fair_policy(policy) ||
@@ -658,6 +670,10 @@ struct rq {
 	struct cfs_rq cfs;
 	struct rt_rq rt;
 	struct dl_rq dl;
+	
+#ifdef CONFIG_CISTER_SCHED_DM_POLICY
+	struct dm_rq dm;
+#endif
 
 #ifdef CONFIG_FAIR_GROUP_SCHED
 	/* list of leaf cfs_rq on this cpu: */
